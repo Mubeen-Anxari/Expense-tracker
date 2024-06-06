@@ -23,21 +23,22 @@
 // export {CounterContextProvider,CounterContext}
 
 import { createContext, useState } from "react";
-type expenseTrackerType={
-    description:string
-    amount:number
-    type: "income" | "expense"
-}
-
-
+type expenseTrackerType = {
+  id: string;
+  description: string;
+  amount: string;
+  type: "income" | "expense";
+};
 
 type providerType = {
   transaction: expenseTrackerType[];
-  setTransaction: React.Dispatch<React.SetStateAction<expenseTrackerType[]>>;
+  addTransaction: (data: expenseTrackerType) => void;
+  deleteTransaction:(id:string)=>void
 };
 const CounterContext = createContext<providerType>({
-    transaction: [],
-    setTransaction: () => null,
+  transaction: [],
+  addTransaction: (data) => null,
+  deleteTransaction:(id)=>null
 });
 const CounterContextProvider = ({
   children,
@@ -45,12 +46,15 @@ const CounterContextProvider = ({
   children: React.ReactNode;
 }>) => {
   const [transaction, setTransaction] = useState<expenseTrackerType[]>([]);
- const addTransaction=(data:providerType)=>{
-    setTransaction([...transaction])
-
- }
+  const addTransaction = (data: expenseTrackerType) => {
+    setTransaction([...transaction, data]);
+  };
+  const deleteTransaction = (id: string) => {
+    const updated=transaction?.filter((item)=>item?.id!==id)
+    setTransaction(updated);
+  };
   return (
-    <CounterContext.Provider value={{ transaction,addTransaction}}>
+    <CounterContext.Provider value={{ transaction, addTransaction,deleteTransaction }}>
       {children}
     </CounterContext.Provider>
   );

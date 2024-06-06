@@ -1,9 +1,29 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { useContext } from "react";
+import { CounterContext } from "../counterContext/counterContext";
+import { ImCross } from "react-icons/im";
+import { v4 as uuidv4 } from "uuid";
 
 export default function expense() {
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [type, setType] = useState<"income" | "expense">("income");
+  const { transaction, addTransaction, deleteTransaction } =
+    useContext(CounterContext);
+  // console.log(addTransaction);
+  const income = transaction?.filter((item) => item.type === 'income').reduce((accumolator,currentValue)=>{
+    return accumolator + currentValue?.amount
+  });
+  const expense = transaction?.filter((item) => item.type === 'expense');
+  // console.log(income);
+  // console.log(expense);
+  
+ 
+  
+
   return (
-    <div
-      className="py-10">
+    <div className="py-10">
       <div className="bg-white">
         <div className=" px-10 flex   justify-center mt-20 text-center">
           <div>
@@ -32,20 +52,25 @@ export default function expense() {
             <hr className="mt-2" />
             <div>
               <br />
-              <div className=" bg-gray-400 p-1 ">
-                <div className="flex justify-between  ">
-                  <small className=" font-semibold">something</small>
-                  <small  className="font-semibold">-$ 0.00</small>
-                </div>
-              </div>
-              
-              <div className=" bg-gray-400 p-1 mt-2 ">
-                <div className="flex justify-between  ">
-                  <small className=" font-semibold">+$ 324</small>
-                  <small  className=" bg-green-400 h-6 font-semibold">.</small>
-                </div>
-              </div>
-             
+
+              {transaction?.map((item) => {
+                return (
+                  <div className=" bg-gray-400 p-1 mt-2 ">
+                    <div className=" flex justify-between gap-2  ">
+                      <small className=" font-semibold">
+                        {item?.description}
+                      </small>
+                      <div className="flex gap-2">
+                        <small className="font-semibold">{item?.amount}</small>
+                        <ImCross
+                          className=" cursor-pointer"
+                          onClick={() => deleteTransaction(item.id)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
             <br />
             <small className="mr-52 font-semibold"> Add New Transaction </small>
@@ -57,22 +82,51 @@ export default function expense() {
                 className="text-black mt-2 ml-2 border border-black p-2 "
                 type="text"
                 placeholder="Enter the text......"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <br />
             <div className="flex flex-col">
               <small className=" mr-64 font-semibold">Amount</small>
               <div className="flex gap-2 ml-6  font-semibold">
-                <input type="radio" />Income
-                <input type="radio" />Expense
+                <input
+                  onChange={(e) => setType(e.target.value as "income")}
+                  type="radio"
+                  id="income"
+                  name="fav_language"
+                  value="income"
+                />
+                Income
+                <input
+                  onChange={(e) => setType(e.target.value as "income")}
+                  type="radio"
+                  id="expense"
+                  name="fav_language"
+                  value="expense"
+                />
+
+                expense
               </div>
               <input
                 className=" text-black mt-2 ml-2 border border-black p-2 "
                 type="text"
                 placeholder="0"
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
               />
             </div>
-            <button className=" mt-4 px-[104px] ml-2 h-10 text-white  bg-blue-900 ">
+            <button
+              onClick={() =>
+                addTransaction({
+                  id: uuidv4(),
+                  description: description,
+                  amount: amount,
+                  type: type,
+                })
+              }
+              className=" mt-4 px-[104px] ml-2 h-10 text-white  bg-blue-900 "
+            >
               Add transaction
             </button>
           </div>

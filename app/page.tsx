@@ -22,10 +22,17 @@ import {useContext} from 'react'
 import { CounterContext } from './counterContext/counterContext'
 
 export default function Home() {
-  const countValue = useContext(CounterContext)
+  const {transaction,addTransaction} = useContext(CounterContext)
   return (
 <div>
-<div>{countValue?.count}</div>
-<button onClick={()=>countValue.setCount(10)}>Add</button>
+<div>{transaction?.map((item)=>{
+  return <h1>{item?.amount}</h1>
+})}</div>
+<button onClick={()=>addTransaction({
+  id:0,
+  description:"test",
+  amount:100,
+  type:"income"
+})}>Add</button>
 </div>  )
 }
